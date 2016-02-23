@@ -1,0 +1,1 @@
+﻿Start-Process -FilePath $(Join-Path -Path $env:APPLICATION_PATH -ChildPath 'Orationi.Master.exe')

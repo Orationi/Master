@@ -1,0 +1,1 @@
+﻿Get-Process -Name Orationi.Master -ErrorAction SilentlyContinue | Stop-Process
