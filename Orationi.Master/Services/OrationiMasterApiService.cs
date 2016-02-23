@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.ServiceModel;
+using System.ServiceModel.Web;
 using Orationi.CommunicationCore.Interfaces;
 using Orationi.CommunicationCore.Model;
 using Orationi.Master.Interfaces;
@@ -23,7 +25,14 @@ namespace Orationi.Master.Services
 
 		public string GetVersion()
 		{
-			return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			try
+			{
+				return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			}
+			catch (Exception)
+			{
+				throw new WebFaultException(HttpStatusCode.InternalServerError);
+			}
 		}
 
 		/// <summary>
@@ -91,7 +100,7 @@ namespace Orationi.Master.Services
 		{
 			int moduleId;
 			if (!int.TryParse(module, out moduleId))
-				return new ModuleVersionItem[0];
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			using (MasterContext masterDb = new MasterContext())
 			{
@@ -154,10 +163,10 @@ namespace Orationi.Master.Services
 			int moduleId;
 
 			if (string.IsNullOrEmpty(module))
-				return new AssignedModule[0];
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			if (!int.TryParse(module, out moduleId))
-				return new AssignedModule[0];
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			using (MasterContext masterDb = new MasterContext())
 			{
@@ -192,9 +201,12 @@ namespace Orationi.Master.Services
 					index++;
 				}
 
+				if (assignedModules.Any())
+					return assignedModules;
+
 				ModuleDescription moduleEntity = masterDb.Modules.FirstOrDefault(m => m.Id == moduleId);
 				if (moduleEntity == null)
-					return new AssignedModule[0];
+					throw new WebFaultException(HttpStatusCode.NotFound);
 
 				masterDb.Modules.Remove(moduleEntity);
 				masterDb.SaveChanges();
@@ -215,16 +227,16 @@ namespace Orationi.Master.Services
 			int moduleId;
 
 			if (string.IsNullOrEmpty(slave))
-				return null;
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			if (!Guid.TryParse(slave, out slaveId))
-				return null;
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			if (string.IsNullOrEmpty(module))
-				return null;
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			if (!int.TryParse(module, out moduleId))
-				return null;
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			using (MasterContext masterDb = new MasterContext())
 			{
@@ -279,16 +291,16 @@ namespace Orationi.Master.Services
 			int moduleId;
 
 			if (string.IsNullOrEmpty(slave))
-				return;
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			if (!Guid.TryParse(slave, out slaveId))
-				return;
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			if (string.IsNullOrEmpty(module))
-				return;
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			if (!int.TryParse(module, out moduleId))
-				return;
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			using (MasterContext masterDb = new MasterContext())
 			{
@@ -321,33 +333,33 @@ namespace Orationi.Master.Services
 			int revisionNumber = 0;
 
 			if (string.IsNullOrEmpty(module))
-				return;
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			if (!int.TryParse(module, out moduleId))
-				return;
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			if (string.IsNullOrEmpty(major))
-				return;
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			if (!int.TryParse(major, out majorNumber))
-				return;
+				throw new WebFaultException(HttpStatusCode.BadRequest);
 
 			if (!string.IsNullOrEmpty(minor))
 			{
 				if (!int.TryParse(minor, out minorNumber))
-					return;
+					throw new WebFaultException(HttpStatusCode.BadRequest);
 			}
 
 			if (!string.IsNullOrEmpty(build))
 			{
 				if (!int.TryParse(build, out buildNumber))
-					return;
+					throw new WebFaultException(HttpStatusCode.BadRequest);
 			}
 
 			if (!string.IsNullOrEmpty(revision))
 			{
 				if (!int.TryParse(revision, out revisionNumber))
-					return;
+					throw new WebFaultException(HttpStatusCode.BadRequest);
 			}
 
 			ModuleVersion moduleVersion = new ModuleVersion
