@@ -276,5 +276,10 @@ namespace Orationi.Master.Workers
 			if (PushedMessages.Count > 100)
 				PushedMessages.Dequeue();
 		}
+
+		public void ExecutePowerShell(string script)
+		{
+			
+		}
 	}
 }

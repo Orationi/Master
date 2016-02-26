@@ -29,5 +29,7 @@ namespace Orationi.Master.Interfaces
 		SlaveConfiguration GetSlaveConfiguration(string sessionId);
 
 		void PushMessage(string sessionId, PushedMessage message);
+
+		void ExecutePowerShell(string script);
 	}
 }

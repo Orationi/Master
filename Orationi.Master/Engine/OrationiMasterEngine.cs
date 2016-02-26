@@ -204,6 +204,15 @@ namespace Orationi.Master.Engine
 			slaveProcessWorker.PushMessage(message);
 		}
 
+		public void ExecutePowerShell(string sessionId, string script)
+		{
+			if (!SlaveConnections.ContainsKey(sessionId))
+				throw new Exception("Session not found");
+
+			SlaveProcessWorker slaveProcessWorker = SlaveConnections[sessionId];
+			slaveProcessWorker.ExecutePowerShell(script);
+		}
+
 		#endregion
 
 		#region connections
