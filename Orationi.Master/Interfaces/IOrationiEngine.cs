@@ -30,6 +30,6 @@ namespace Orationi.Master.Interfaces
 
 		void PushMessage(string sessionId, PushedMessage message);
 
-		void ExecutePowerShell(string script);
+		void ExecutePowerShell(string sessionId, string script);
 	}
 }
