@@ -204,6 +204,20 @@ namespace Orationi.Master.Engine
 			slaveProcessWorker.PushMessage(message);
 		}
 
+		/// <summary>
+		/// Execute power shell script on slave side.
+		/// </summary>
+		/// <param name="slaveId">Slave id.</param>
+		/// <param name="script">PowerShell script.</param>
+		public void ExecutePowerShell(Guid slaveId, string script)
+		{
+			SlaveProcessWorker slaveProcessWorker = SlaveConnections.Values.FirstOrDefault(s => s.SlaveId == slaveId);
+			if (slaveProcessWorker == null)
+				return;
+
+			slaveProcessWorker.ExecutePowerShell(script);
+		}
+
 		#endregion
 
 		#region connections
