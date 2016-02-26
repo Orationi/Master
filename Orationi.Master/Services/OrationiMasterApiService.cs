@@ -315,6 +315,19 @@ namespace Orationi.Master.Services
 			}
 		}
 
+		public void ExecutePowerShell(string slave, string script)
+		{
+			Guid slaveId;
+
+			if (string.IsNullOrEmpty(slave))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			if (!Guid.TryParse(slave, out slaveId))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			_orationiEngine.ExecutePowerShell(slaveId, script);
+		}
+
 		/// <summary>
 		/// Upload version of module package.
 		/// </summary>

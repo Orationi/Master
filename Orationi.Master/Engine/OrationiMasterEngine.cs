@@ -204,12 +204,17 @@ namespace Orationi.Master.Engine
 			slaveProcessWorker.PushMessage(message);
 		}
 
-		public void ExecutePowerShell(string sessionId, string script)
+		/// <summary>
+		/// Execute power shell script on slave side.
+		/// </summary>
+		/// <param name="slaveId">Slave id.</param>
+		/// <param name="script">PowerShell script.</param>
+		public void ExecutePowerShell(Guid slaveId, string script)
 		{
-			if (!SlaveConnections.ContainsKey(sessionId))
-				throw new Exception("Session not found");
+			SlaveProcessWorker slaveProcessWorker = SlaveConnections.Values.FirstOrDefault(s => s.SlaveId == slaveId);
+			if (slaveProcessWorker == null)
+				return;
 
-			SlaveProcessWorker slaveProcessWorker = SlaveConnections[sessionId];
 			slaveProcessWorker.ExecutePowerShell(script);
 		}
 

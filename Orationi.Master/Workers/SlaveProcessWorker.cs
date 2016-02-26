@@ -279,7 +279,7 @@ namespace Orationi.Master.Workers
 
 		public void ExecutePowerShell(string script)
 		{
-			
+			Callback.ExecutePowerShell(script);
 		}
 	}
 }
