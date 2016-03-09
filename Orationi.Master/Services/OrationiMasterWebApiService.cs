@@ -13,35 +13,32 @@ using Orationi.Master.Model;
 
 namespace Orationi.Master.Services
 {
-	/// <summary>
-	/// Master API-service for Rich-client.
-	/// </summary>
 	[ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
-	public class OrationiMasterApiService : IOrationiApiService
+	public class OrationiMasterWebApiService : IOrationiWebApiService
 	{
-		/// <summary>
-		/// System engine.
-		/// </summary>
 		private readonly IOrationiEngine _orationiEngine;
 
-		/// <summary>
-		/// Base constructor.
-		/// </summary>
-		/// <param name="engine">System engine.</param>
-		public OrationiMasterApiService(IOrationiEngine engine)
+		public OrationiMasterWebApiService(IOrationiEngine engine)
 		{
 			_orationiEngine = engine;
 		}
 
-		/// <summary>
-		/// Get current version of master-service.
-		/// </summary>
-		/// <returns></returns>
 		public string GetVersion()
 		{
-			return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			try
+			{
+				return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			}
+			catch (Exception)
+			{
+				throw new WebFaultException(HttpStatusCode.InternalServerError);
+			}
 		}
 
+		/// <summary>
+		/// Get all slaves registred in system.
+		/// </summary>
+		/// <returns>Array of <c>OrationiSlaveItem</c>.</returns>
 		public OrationiSlaveItem[] GetSlavesList()
 		{
 			using (MasterContext masterDb = new MasterContext())
@@ -68,6 +65,10 @@ namespace Orationi.Master.Services
 			}
 		}
 
+		/// <summary>
+		/// Get all modules registred in system.
+		/// </summary>
+		/// <returns>Array of <c>ModuleItem</c>.</returns>
 		public ModuleItem[] GetModulesList()
 		{
 			using (MasterContext masterDb = new MasterContext())
@@ -90,10 +91,20 @@ namespace Orationi.Master.Services
 			}
 		}
 
-		public ModuleVersionItem[] GetModuleVerionsList(int moduleId)
+		/// <summary>
+		/// Get existing versions of module.
+		/// </summary>
+		/// <param name="module">Module identifier.</param>
+		/// <returns>Array of <c>ModuleVersionItem</c>.</returns>
+		public ModuleVersionItem[] GetModuleVerionsList(string module)
 		{
+			int moduleId;
+			if (!int.TryParse(module, out moduleId))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
 			using (MasterContext masterDb = new MasterContext())
 			{
+
 				IEnumerable<ModuleVersion> moduleVersions = masterDb.ModuleVersions.Where(mv => mv.ModuleId == moduleId);
 				ModuleVersionItem[] result = new ModuleVersionItem[moduleVersions.Count()];
 
@@ -115,6 +126,11 @@ namespace Orationi.Master.Services
 			}
 		}
 
+		/// <summary>
+		/// Register module in system.
+		/// </summary>
+		/// <param name="moduleName">Module name.</param>
+		/// <returns><c>ModuleItem</c></returns>
 		public ModuleItem RegisterModule(string moduleName)
 		{
 			using (MasterContext masterDb = new MasterContext())
@@ -137,8 +153,21 @@ namespace Orationi.Master.Services
 			}
 		}
 
-		public AssignedModule[] UnregisterModule(int moduleId)
+		/// <summary>
+		/// Remove module from system.
+		/// </summary>
+		/// <param name="module">Module identifier.</param>
+		/// <returns>Array of <c>AssignedModule</c> if module wasn't assigned. Empty array in case of sucessful unregistration.</returns>
+		public AssignedModule[] UnregisterModule(string module)
 		{
+			int moduleId;
+
+			if (string.IsNullOrEmpty(module))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			if (!int.TryParse(module, out moduleId))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
 			using (MasterContext masterDb = new MasterContext())
 			{
 				IEnumerable<SlaveModule> slaveModules = masterDb.SlaveModules.Where(s => s.ModuleId == moduleId);
@@ -186,8 +215,29 @@ namespace Orationi.Master.Services
 			return new AssignedModule[0];
 		}
 
-		public AssignedModule AssignModule(Guid slaveId, int moduleId)
+		/// <summary>
+		/// Assugn module to slave.
+		/// </summary>
+		/// <param name="slave">Slave identifier.</param>
+		/// <param name="module">Module identifier.</param>
+		/// <returns></returns>
+		public AssignedModule AssignModule(string slave, string module)
 		{
+			Guid slaveId;
+			int moduleId;
+
+			if (string.IsNullOrEmpty(slave))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			if (!Guid.TryParse(slave, out slaveId))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			if (string.IsNullOrEmpty(module))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			if (!int.TryParse(module, out moduleId))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
 			using (MasterContext masterDb = new MasterContext())
 			{
 				SlaveModule slaveModule = masterDb.SlaveModules.FirstOrDefault(s => s.SlaveId == slaveId && s.ModuleId == moduleId);
@@ -230,8 +280,28 @@ namespace Orationi.Master.Services
 			}
 		}
 
-		public void UnassignModule(Guid slaveId, int moduleId)
+		/// <summary>
+		/// Unassign module from slave.
+		/// </summary>
+		/// <param name="slave">Slave identifier.</param>
+		/// <param name="module">Mpdule identifier.</param>
+		public void UnassignModule(string slave, string module)
 		{
+			Guid slaveId;
+			int moduleId;
+
+			if (string.IsNullOrEmpty(slave))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			if (!Guid.TryParse(slave, out slaveId))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			if (string.IsNullOrEmpty(module))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			if (!int.TryParse(module, out moduleId))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
 			using (MasterContext masterDb = new MasterContext())
 			{
 				SlaveModule slaveModule = masterDb.SlaveModules.FirstOrDefault(s => s.SlaveId == slaveId && s.ModuleId == moduleId);
@@ -245,20 +315,73 @@ namespace Orationi.Master.Services
 			}
 		}
 
-		public void ExecutePowerShell(Guid slaveId, string script)
+		public void ExecutePowerShell(string slave, string script)
 		{
+			Guid slaveId;
+
+			if (string.IsNullOrEmpty(slave))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			if (!Guid.TryParse(slave, out slaveId))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
 			_orationiEngine.ExecutePowerShell(slaveId, script);
 		}
 
-		public void UploadModuleVersion(int moduleId, string major, string minor, string build, string revision, Stream packageStream)
+		/// <summary>
+		/// Upload version of module package.
+		/// </summary>
+		/// <param name="module">Module ideintifier.</param>
+		/// <param name="major">Major version.</param>
+		/// <param name="minor">Minor version.</param>
+		/// <param name="build">Build version.</param>
+		/// <param name="revision">Revision.</param>
+		/// <param name="packageStream">Stream with module package.</param>
+		public void UploadModuleVersion(string module, string major, string minor, string build, string revision, Stream packageStream)
 		{
+			int moduleId;
+			int majorNumber;
+			int minorNumber = 0;
+			int buildNumber = 0;
+			int revisionNumber = 0;
+
+			if (string.IsNullOrEmpty(module))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			if (!int.TryParse(module, out moduleId))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			if (string.IsNullOrEmpty(major))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			if (!int.TryParse(major, out majorNumber))
+				throw new WebFaultException(HttpStatusCode.BadRequest);
+
+			if (!string.IsNullOrEmpty(minor))
+			{
+				if (!int.TryParse(minor, out minorNumber))
+					throw new WebFaultException(HttpStatusCode.BadRequest);
+			}
+
+			if (!string.IsNullOrEmpty(build))
+			{
+				if (!int.TryParse(build, out buildNumber))
+					throw new WebFaultException(HttpStatusCode.BadRequest);
+			}
+
+			if (!string.IsNullOrEmpty(revision))
+			{
+				if (!int.TryParse(revision, out revisionNumber))
+					throw new WebFaultException(HttpStatusCode.BadRequest);
+			}
+
 			ModuleVersion moduleVersion = new ModuleVersion
 			{
 				ModuleId = moduleId,
-				Major = int.Parse(major),
-				Minor = int.Parse(minor),
-				Build = int.Parse(build),
-				Revision = int.Parse(revision)
+				Major = majorNumber,
+				Minor = minorNumber,
+				Build = buildNumber,
+				Revision = revisionNumber
 			};
 
 			_orationiEngine.SaveModule(moduleVersion, packageStream);
