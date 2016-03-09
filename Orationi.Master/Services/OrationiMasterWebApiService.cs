@@ -14,11 +14,11 @@ using Orationi.Master.Model;
 namespace Orationi.Master.Services
 {
 	[ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
-	public class OrationiMasterApiService : IOrationiApiService
+	public class OrationiMasterWebApiService : IOrationiWebApiService
 	{
 		private readonly IOrationiEngine _orationiEngine;
 
-		public OrationiMasterApiService(IOrationiEngine engine)
+		public OrationiMasterWebApiService(IOrationiEngine engine)
 		{
 			_orationiEngine = engine;
 		}
