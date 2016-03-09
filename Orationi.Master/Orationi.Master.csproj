@@ -151,6 +151,7 @@
     <Compile Include="Model\SlaveDescription.cs" />
     <Compile Include="Model\SlaveModule.cs" />
     <Compile Include="Services\OrationiMasterApiService.cs" />
+    <Compile Include="Services\OrationiMasterWebApiService.cs" />
     <Compile Include="Unity\UnityInstanceProvider.cs" />
     <Compile Include="Unity\UnityServiceHost .cs" />
     <Compile Include="Program.cs" />
