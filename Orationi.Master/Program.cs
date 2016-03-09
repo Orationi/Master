@@ -31,7 +31,7 @@ namespace Orationi.Master
 				Uri apiAddress = new Uri("http://localhost:57345/Orationi/Master/Api/v1/");
 
 				ServiceHost masterHost = new UnityServiceHost(container, typeof(OrationiMasterService), masterAddress);
-				ServiceHost apiHost = new UnityServiceHost(container, typeof(OrationiMasterApiService), apiAddress);
+				ServiceHost apiHost = new UnityServiceHost(container, typeof(OrationiMasterWebApiService), apiAddress);
 
 				try
 				{
