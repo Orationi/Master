@@ -68,8 +68,8 @@ namespace Orationi.Master.Engine
 
 		private void InitializeDataContext()
 		{
-			using (MasterContext masterDb = new MasterContext())
-				masterDb.Database.EnsureCreated();
+			/*using (MasterContext masterDb = new MasterContext())
+				masterDb.Database.EnsureCreated();*/
 		}
 
 		#region activity monitoring
