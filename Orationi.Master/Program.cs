@@ -47,7 +47,7 @@ namespace Orationi.Master
 					masterHost.Description.Endpoints.Add(new UdpDiscoveryEndpoint());
 					masterHost.Open();
 
-					var apiEndpoint = apiHost.AddServiceEndpoint(typeof(IOrationiApiService), new WebHttpBinding(WebHttpSecurityMode.None), string.Empty);
+					var apiEndpoint = apiHost.AddServiceEndpoint(typeof(IOrationiWebApiService), new WebHttpBinding(WebHttpSecurityMode.None), string.Empty);
 					apiEndpoint.EndpointBehaviors.Add(new WebHttpBehavior());
 					apiEndpoint.Behaviors.Add(new CorsSupportBehavior());
 					ServiceMetadataBehavior smb = apiHost.Description.Behaviors.Find<ServiceMetadataBehavior>() ?? new ServiceMetadataBehavior();
