@@ -1,2 +1,1 @@
-﻿New-Service -Name "OrationiMasterService" -BinaryPathName ((Resolve-Path .\).Path + "\Orationi.Master.exe") -DisplayName "Orationi Master Service" -StartupType Auto -Description "Core of Orationi System"
-Start-Service -Name "OrationiMasterService"
+﻿Start-Service -Name "OrationiMasterService"
