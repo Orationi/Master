@@ -82,8 +82,8 @@ namespace Orationi.Master
 			{
 				container.RegisterType<IOrationiEngine, OrationiMasterEngine>(new ContainerControlledLifetimeManager());
 
-				Uri masterAddress = new Uri("net.tcp://orationimaster.westeurope.cloudapp.azure.com:57344/Orationi/Master/v1/");
-				Uri apiAddress = new Uri("http://orationimaster.westeurope.cloudapp.azure.com:57345/Orationi/Master/Api/v1/");
+				Uri masterAddress = new Uri("net.tcp://localhost:57344/Orationi/Master/v1/");
+				Uri apiAddress = new Uri("http://localhost:57345/Orationi/Master/Api/v1/");
 
 				_masterHost = new UnityServiceHost(container, typeof(OrationiMasterService), masterAddress);
 				_apiHost = new UnityServiceHost(container, typeof(OrationiMasterWebApiService), apiAddress);
