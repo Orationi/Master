@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using LiteDB;
 
 namespace Orationi.Master.Model
@@ -12,7 +13,7 @@ namespace Orationi.Master.Model
 		public MasterContext()
 		{
 			// Open database (or create if doesn't exist)
-			_dataBase = new LiteDatabase(@"OrationiMaster.db");
+			_dataBase = new LiteDatabase(Path.Combine(System.Reflection.Assembly.GetEntryAssembly().Location, @"OrationiMaster.db"));
 
 			// Get a collection (or create, if doesn't exist)
 			_dataBase.GetCollection<ModuleDescription>("ModuleDescriptions");
