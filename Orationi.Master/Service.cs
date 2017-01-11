@@ -117,7 +117,7 @@ namespace Orationi.Master
 					_eventLog.WriteEntry(eventMessage);
 					Console.WriteLine(eventMessage);
 
-					eventMessage = "\nMaster Api Service is running...\nAvailable Endpoints:"
+					eventMessage = "\nMaster Api Service is running...\nAvailable Endpoints:";
 					_apiHost.Description.Endpoints.ToList().ForEach(endpoint => eventMessage += endpoint.Address.ToString());
 					_eventLog.WriteEntry(eventMessage);
 					Console.WriteLine(eventMessage);
