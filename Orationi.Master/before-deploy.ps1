@@ -1,1 +1,1 @@
-﻿Get-Process -Name Orationi.Master -ErrorAction SilentlyContinue | Stop-Process
+﻿Get-Service "OrationiMasterService" | sc.exe delete OrationiMasterService
