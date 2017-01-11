@@ -1,1 +1,1 @@
-﻿Get-Service "OrationiMasterService" | sc.exe delete OrationiMasterService
+﻿sc.exe delete OrationiMasterService
