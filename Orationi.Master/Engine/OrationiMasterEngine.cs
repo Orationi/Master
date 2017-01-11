@@ -163,22 +163,7 @@ namespace Orationi.Master.Engine
 			if (!SlaveConnections[sessionId].HasModule(moduleId))
 				throw new Exception("Requested module doesn't assigned to current slave.");
 
-			ModuleVersion moduleVersion;
-			using (MasterContext masterDb = new MasterContext())
-			{
-				moduleVersion = masterDb.ModuleVersions.Where(m => m.ModuleId == moduleId)
-					.OrderByDescending(m => m.Major)
-					.ThenByDescending(m => m.Minor)
-					.ThenByDescending(m => m.Build)
-					.ThenByDescending(m => m.Revision)
-					.FirstOrDefault();
-
-				if (moduleVersion == null)
-					throw new Exception("Module version not found.");
-			}
-
-			using (FileStream stream = new FileStream(moduleVersion.Path, FileMode.Open, FileAccess.Read, FileShare.Read))
-				return stream;
+			return null;
 		}
 
 		public SlaveConfiguration GetSlaveConfiguration(string sessionId)

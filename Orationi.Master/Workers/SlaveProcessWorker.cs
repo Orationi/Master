@@ -138,11 +138,11 @@ namespace Orationi.Master.Workers
 			using (MasterContext masterDb = new MasterContext())
 			{
 				//If slave exist in db - update some information.
-				SlaveDescription slave = masterDb.Slaves.FirstOrDefault(s => s.Address == Ip);
+				SlaveDescription slave = masterDb.Slaves.Find(s => s.Address == Ip).FirstOrDefault();
 				if (slave != null)
 				{
 					slave.LastConnectionOn = DateTime.Now;
-					masterDb.SaveChanges();
+					masterDb.Slaves.Update(slave);
 					SlaveId = slave.Id;
 					return;
 				}
@@ -152,14 +152,12 @@ namespace Orationi.Master.Workers
 				slave = new SlaveDescription
 				{
 					Address = Ip,
-					//Id = Guid.NewGuid(),
 					RegistredOn = DateTime.Now,
 					LastConnectionOn = DateTime.Now,
 					Name = $"Unknown slave {hostName} ({Ip})"
 				};
 
-				masterDb.Slaves.Add(slave);
-				masterDb.SaveChanges();
+				masterDb.Slaves.Insert(slave);
 
 				SlaveId = slave.Id;
 			}
@@ -220,48 +218,12 @@ namespace Orationi.Master.Workers
 
 		public bool HasModule(int moduleId)
 		{
-			using (MasterContext masterDb = new MasterContext())
-			{
-				SlaveModule slaveModule = masterDb.SlaveModules.FirstOrDefault(s => s.SlaveId == SlaveId && s.ModuleId == moduleId);
-				return slaveModule != null;
-			}
+			throw new NotImplementedException();
 		}
 
 		public SlaveConfiguration GetConfiguration()
 		{
 			SlaveConfiguration configuration = new SlaveConfiguration();
-
-			using (MasterContext masterDb = new MasterContext())
-			{
-				IEnumerable<SlaveModule> slaveModules = masterDb.SlaveModules.Where(s => s.SlaveId == SlaveId);
-				configuration.Modules = new ModuleVersionItem[slaveModules.Count()];
-
-				int index = 0;
-				foreach (SlaveModule slaveModule in slaveModules)
-				{
-					ModuleVersion moduleVersion = masterDb.ModuleVersions.Where(m => m.ModuleId == slaveModule.ModuleId)
-																			.OrderByDescending(m => m.Major)
-																			.ThenByDescending(m => m.Minor)
-																			.ThenByDescending(m => m.Build)
-																			.ThenByDescending(m => m.Revision)
-																			.FirstOrDefault();
-
-					if (moduleVersion == null)
-						continue;
-
-					ModuleVersionItem moduleVersionItem = new ModuleVersionItem
-					{
-						ModuleId = slaveModule.ModuleId,
-						Major = moduleVersion.Major,
-						Minor = moduleVersion.Minor,
-						Build = moduleVersion.Build,
-						Revision = moduleVersion.Revision
-					};
-
-					configuration.Modules[index] = moduleVersionItem;
-					index++;
-				}
-			}
 			return configuration;
 		}
 

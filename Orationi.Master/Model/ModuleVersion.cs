@@ -1,8 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Orationi.Master.Model
+﻿namespace Orationi.Master.Model
 {
-	[Table("ModuleVersions")]
 	public class ModuleVersion
 	{
 		public int ModuleId { get; set; }
@@ -16,7 +13,5 @@ namespace Orationi.Master.Model
 		public int Revision { get; set; }
 
 		public string Path { get; set; }
-
-		public virtual ModuleDescription Module { get; set; }
 	}
 }
