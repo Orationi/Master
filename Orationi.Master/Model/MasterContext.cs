@@ -11,5 +11,10 @@ namespace Orationi.Master.Model
 		public DbSet<ModuleVersion> ModuleVersions { get; set; }
 
 		public DbSet<SlaveModule> SlaveModules { get; set; }
+
+		public MasterContext() : base(typeof(MasterContext).Name)
+		{
+
+		}
 	}
 }
