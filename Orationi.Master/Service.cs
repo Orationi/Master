@@ -113,12 +113,12 @@ namespace Orationi.Master
 					_apiHost.Open();
 
 					var eventMessage = "Master Service is running...\nAvailable Endpoints:";
-					_masterHost.Description.Endpoints.ToList().ForEach(endpoint => eventMessage += endpoint.Address.ToString());
+					_masterHost.Description.Endpoints.ToList().ForEach(endpoint => eventMessage += endpoint.Address.ToString() + "\n");
 					_eventLog.WriteEntry(eventMessage);
 					Console.WriteLine(eventMessage);
 
 					eventMessage = "\nMaster Api Service is running...\nAvailable Endpoints:";
-					_apiHost.Description.Endpoints.ToList().ForEach(endpoint => eventMessage += endpoint.Address.ToString());
+					_apiHost.Description.Endpoints.ToList().ForEach(endpoint => eventMessage += endpoint.Address.ToString() + "\n");
 					_eventLog.WriteEntry(eventMessage);
 					Console.WriteLine(eventMessage);
 				}
