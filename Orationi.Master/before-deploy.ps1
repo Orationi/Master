@@ -1,1 +1,2 @@
-﻿sc.exe delete OrationiMasterService
+﻿Stop-Service -Name "OrationiMasterService"
+sc.exe delete OrationiMasterService
