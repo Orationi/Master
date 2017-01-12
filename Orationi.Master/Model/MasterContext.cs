@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Management;
 using LiteDB;
 
 namespace Orationi.Master.Model
@@ -13,7 +14,7 @@ namespace Orationi.Master.Model
 		public MasterContext()
 		{
 			// Open database (or create if doesn't exist)
-			_dataBase = new LiteDatabase(Path.Combine(System.Reflection.Assembly.GetEntryAssembly().Location, @"OrationiMaster.db"));
+			_dataBase = new LiteDatabase(Path.Combine(this.GetDatabasePath(), @"OrationiMaster.db"));
 
 			// Get a collection (or create, if doesn't exist)
 			_dataBase.GetCollection<ModuleDescription>("ModuleDescriptions");
@@ -25,6 +26,20 @@ namespace Orationi.Master.Model
 		public void Dispose()
 		{
 			_dataBase?.Dispose();
+		}
+
+		private string GetDatabasePath()
+		{
+			WqlObjectQuery wqlObjectQuery = new WqlObjectQuery(string.Format("SELECT * FROM Win32_Service WHERE Name = '{0}'", "OrationiMasterService"));
+			ManagementObjectSearcher managementObjectSearcher = new ManagementObjectSearcher(wqlObjectQuery);
+			ManagementObjectCollection managementObjectCollection = managementObjectSearcher.Get();
+
+			foreach (ManagementObject managementObject in managementObjectCollection)
+			{
+				return managementObject.GetPropertyValue("PathName").ToString();
+			}
+
+			return string.Empty;
 		}
 	}
 }
