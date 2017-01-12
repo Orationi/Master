@@ -23,8 +23,11 @@ namespace Orationi.Master.Services
 		{
 			string sessionId = OperationContext.Current.SessionId;
 			IOrationiSlaveCallback callback = OperationContext.Current.GetCallbackChannel<IOrationiSlaveCallback>();
-			_orationiEngine.AddSlaveConnection(sessionId, callback);
-			return _orationiEngine.GetSlaveConfiguration(sessionId);
+			//_orationiEngine.AddSlaveConnection(sessionId, callback);
+			return new SlaveConfiguration()
+			{
+				Modules = new ModuleVersionItem[0]
+			}; //_orationiEngine.GetSlaveConfiguration(sessionId);
 		}
 
 		/// <summary>
