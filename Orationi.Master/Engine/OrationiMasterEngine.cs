@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -23,6 +24,8 @@ namespace Orationi.Master.Engine
 		/// Sync object.
 		/// </summary>
 		private object _locker = new object();
+
+		private readonly EventLog _eventLog;
 
 		public string BaseModuleDirectory { get; set; }
 
@@ -53,6 +56,14 @@ namespace Orationi.Master.Engine
 		/// </summary>
 		public OrationiMasterEngine()
 		{
+			_eventLog = new EventLog();
+			if (!EventLog.SourceExists("Orationi"))
+			{
+				EventLog.CreateEventSource("Orationi", "OrationiMasterLog");
+			}
+			_eventLog.Source = "Orationi";
+			_eventLog.Log = "OrationiMasterLog";
+
 			SlaveConnections = new ConcurrentDictionary<string, SlaveProcessWorker>();
 			InitializeDataContext();
 			InitializeStorage();
@@ -214,13 +225,20 @@ namespace Orationi.Master.Engine
 		/// <param name="callback">IOrationiSlaveCallback</param>
 		public void AddSlaveConnection(string sessionId, IOrationiSlaveCallback callback)
 		{
-			string ip = NetworkUtility.GetClientIpFromOperationContext();
-			//Kick existing connection with same sessionId or ip.
-			KickExistingConnections(sessionId, ip);
+			try
+			{
+				string ip = NetworkUtility.GetClientIpFromOperationContext();
+				//Kick existing connection with same sessionId or ip.
+				KickExistingConnections(sessionId, ip);
 
-			//Create new slave process worker
-			SlaveProcessWorker newSlaveProcessWorker = new SlaveProcessWorker(sessionId, callback, InactiveTimeout);
-			SlaveConnections[sessionId] = newSlaveProcessWorker;
+				//Create new slave process worker
+				SlaveProcessWorker newSlaveProcessWorker = new SlaveProcessWorker(sessionId, callback, InactiveTimeout);
+				SlaveConnections[sessionId] = newSlaveProcessWorker;
+			}
+			catch (Exception ex)
+			{
+				_eventLog.WriteEntry(ex.Message, EventLogEntryType.Error);
+			}
 		}
 
 		/// <summary>
