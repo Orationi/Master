@@ -48,8 +48,8 @@ namespace Orationi.Master
 		{
 			ServiceStatus serviceStatus = new ServiceStatus
 			{
-				dwCurrentState = ServiceState.SERVICE_START_PENDING,
-				dwWaitHint = 100000
+				dwCurrentState = state,
+				dwWaitHint = waitHint
 			};
 			SetServiceStatus(this.ServiceHandle, ref serviceStatus);
 		}
