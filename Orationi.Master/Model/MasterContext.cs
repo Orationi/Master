@@ -36,8 +36,10 @@ namespace Orationi.Master.Model
 
 			foreach (ManagementObject managementObject in managementObjectCollection)
 			{
-				return managementObject.GetPropertyValue("PathName").ToString();
+				return Path.GetDirectoryName(managementObject.GetPropertyValue("PathName").ToString());
 			}
+
+
 
 			return string.Empty;
 		}
